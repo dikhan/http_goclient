@@ -1,17 +1,17 @@
 package logentries_goclient
 
 import (
-	"net/http"
 	"encoding/json"
-	"io/ioutil"
-	"strings"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
 )
 
 // HttpClient represents an http wrapper which reduces the boiler plate needed to marshall/un-marshall request/response
 // bodies by providing friendly CRUD http operations that allow in/out interfaces
 type HttpClient struct {
-	httpClient    *http.Client
+	HttpClient *http.Client
 }
 
 // Get issues a GET HTTP request to the specified URL including the headers passed in.
@@ -28,7 +28,7 @@ type HttpClient struct {
 //
 //  out := &Out{}
 //  headers := map[string]string{"header_example": "header_value"}
-//  httpClient.Get("http://api.com/resource", headers, out)
+//  HttpClient.Get("http://api.com/resource", headers, out)
 //
 func (httpClient *HttpClient) Get(url string, headers map[string]string, out interface{}) (*http.Response, error) {
 	if req, err := httpClient.prepareRequest(http.MethodGet, url, headers, nil); err != nil {
@@ -59,7 +59,7 @@ func (httpClient *HttpClient) Get(url string, headers map[string]string, out int
 //  in := &In{}
 //  out := &Out{}
 //  headers := map[string]string{"header_example": "header_value"}
-//  httpClient.PostJson("http://api.com/resource", headers, in, out)
+//  HttpClient.PostJson("http://api.com/resource", headers, in, out)
 //
 func (httpClient *HttpClient) PostJson(url string, headers map[string]string, in interface{}, out interface{}) (*http.Response, error) {
 	headers["Content-Type"] = "application/json"
@@ -86,7 +86,7 @@ func (httpClient *HttpClient) PostJson(url string, headers map[string]string, in
 //  in := &In{}
 //  out := &Out{}
 //  headers := map[string]string{"header_example": "header_value"}
-//  httpClient.Post("http://api.com/resource", headers, in, out)
+//  HttpClient.Post("http://api.com/resource", headers, in, out)
 //
 func (httpClient *HttpClient) Post(url string, headers map[string]string, in interface{}, out interface{}) (*http.Response, error) {
 	if req, err := httpClient.prepareRequest(http.MethodPost, url, headers, in); err != nil {
@@ -117,7 +117,7 @@ func (httpClient *HttpClient) Post(url string, headers map[string]string, in int
 //  in := &In{}
 //  out := &Out{}
 //  headers := map[string]string{"header_example": "header_value"}
-//  httpClient.PutJson("http://api.com/resource", headers, in, out)
+//  HttpClient.PutJson("http://api.com/resource", headers, in, out)
 //
 func (httpClient *HttpClient) PutJson(url string, headers map[string]string, in interface{}, out interface{}) (*http.Response, error) {
 	headers["Content-Type"] = "application/json"
@@ -144,7 +144,7 @@ func (httpClient *HttpClient) PutJson(url string, headers map[string]string, in 
 //  in := &In{}
 //  out := &Out{}
 //  headers := map[string]string{"header_example": "header_value"}
-//  httpClient.Put("http://api.com/resource", headers, in, out)
+//  HttpClient.Put("http://api.com/resource", headers, in, out)
 //
 func (httpClient *HttpClient) Put(url string, headers map[string]string, in interface{}, out interface{}) (*http.Response, error) {
 	if req, err := httpClient.prepareRequest(http.MethodPut, url, headers, in); err != nil {
@@ -185,7 +185,7 @@ func (httpClient *HttpClient) prepareRequest(method, url string, headers map[str
 }
 
 func (httpClient *HttpClient) performRequest(req *http.Request, out interface{}) (*http.Response, error) {
-	resp, err := httpClient.httpClient.Do(req)
+	resp, err := httpClient.HttpClient.Do(req)
 	defer resp.Body.Close()
 
 	if err != nil {
@@ -199,7 +199,7 @@ func (httpClient *HttpClient) performRequest(req *http.Request, out interface{})
 		}
 		if len(body) > 0 {
 			if err = json.Unmarshal(body, &out); err != nil {
-				return nil, fmt.Errorf("unable to unmarshal response body ['%s'] for request = '%s %s %s'. Response = '%s'",  err.Error(), req.Method, req.URL, req.Proto, resp.Status)
+				return nil, fmt.Errorf("unable to unmarshal response body ['%s'] for request = '%s %s %s'. Response = '%s'", err.Error(), req.Method, req.URL, req.Proto, resp.Status)
 			}
 		} else {
 			return nil, fmt.Errorf("expected a response body but response body received was empty for request = '%s %s %s'. Response = '%s'", req.Method, req.URL, req.Proto, resp.Status)
