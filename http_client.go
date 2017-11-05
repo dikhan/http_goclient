@@ -62,7 +62,7 @@ func (httpClient *HttpClient) Get(url string, headers map[string]string, out int
 //  HttpClient.PostJson("http://api.com/resource", headers, in, out)
 //
 func (httpClient *HttpClient) PostJson(url string, headers map[string]string, in interface{}, out interface{}) (*http.Response, error) {
-	headers["Content-Type"] = "application/json"
+	httpClient.addJsonHeader(headers)
 	return httpClient.Post(url, headers, in, out)
 }
 
@@ -120,7 +120,7 @@ func (httpClient *HttpClient) Post(url string, headers map[string]string, in int
 //  HttpClient.PutJson("http://api.com/resource", headers, in, out)
 //
 func (httpClient *HttpClient) PutJson(url string, headers map[string]string, in interface{}, out interface{}) (*http.Response, error) {
-	headers["Content-Type"] = "application/json"
+	httpClient.addJsonHeader(headers)
 	return httpClient.Put(url, headers, in, out)
 }
 
@@ -206,4 +206,11 @@ func (httpClient *HttpClient) performRequest(req *http.Request, out interface{})
 		}
 	}
 	return resp, nil
+}
+
+func (httpClient *HttpClient) addJsonHeader(headers map[string]string) {
+	if headers == nil {
+		headers = map[string]string{}
+	}
+	headers["Content-Type"] = "application/json"
 }
