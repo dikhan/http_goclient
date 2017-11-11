@@ -1,4 +1,4 @@
-package logentries_goclient
+package http_goclient
 
 import (
 	"encoding/json"
