@@ -18,6 +18,7 @@ type ExpectedRequest struct {
 type Response struct {
 	HttpStatusCode int
 	Payload        interface{}
+	RawContent bool
 }
 
 // A TestRequestMatcher represents the expected behaviour of the mock server
@@ -27,15 +28,21 @@ type TestRequestMatcher struct {
 }
 
 // NewRequestMatcher constructs a TestRequestMatcher used to match an http.Request with the expected configured request
-// and return the configured response and status code
+// and returns the configured response in JSON and status code
 func NewRequestMatcher(expectedHttpMethod, expectedPath string, expectedPayload interface{}, responseStatusCode int, response interface{}) TestRequestMatcher {
+	return NewRequestMatcherWithOptions(expectedHttpMethod, expectedPath, expectedPayload, responseStatusCode, response, false)
+}
+
+// NewRequestMatcher constructs a TestRequestMatcher used to match an http.Request with the expected configured request
+// and return the configured response (either in JSON or RAW depending on the value provided for responseRawContent) and status code
+func NewRequestMatcherWithOptions(expectedHttpMethod, expectedPath string, expectedPayload interface{}, responseStatusCode int, response interface{}, responseRawContent bool) TestRequestMatcher {
 	return TestRequestMatcher{
 		ExpectedRequest: ExpectedRequest{
 			HttpMethod: expectedHttpMethod,
 			Url:        expectedPath,
 			Payload:    expectedPayload,
 		},
-		Response: Response{responseStatusCode, response},
+		Response: Response{responseStatusCode, response, responseRawContent},
 	}
 }
 

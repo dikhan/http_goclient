@@ -21,12 +21,21 @@ func (t *TestClientServer) serveResponse(w http.ResponseWriter, r *http.Request)
 	if err := t.RequestMatcher.match(r); err != nil {
 		return err
 	} else {
-		resp, err := json.Marshal(t.RequestMatcher.Response.Payload)
-		if err != nil {
-			return fmt.Errorf("error thrown while marshalling the mock repsonse [%s] - Error: %s", resp, err)
+		var resp []byte
+		var contentType string
+		if t.RequestMatcher.Response.RawContent {
+			resp = t.RequestMatcher.Response.Payload.([]byte)
+			contentType = "application/octet-stream"
+		} else {
+			resp, err := json.Marshal(t.RequestMatcher.Response.Payload)
+			if err != nil {
+				return fmt.Errorf("error thrown while marshalling the mock repsonse [%s] - Error: %s", resp, err)
+			}
+			contentType = "application/json"
 		}
 		if resp != nil {
 			w.WriteHeader(t.RequestMatcher.Response.HttpStatusCode)
+			w.Header().Set("Content-Type", contentType)
 			w.Write([]byte(resp))
 		}
 		return nil
