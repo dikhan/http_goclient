@@ -209,10 +209,10 @@ func (httpClient *HttpClient) performRequest(req *http.Request, out interface{})
 		resp.Body = ioutil.NopCloser(bytes.NewReader(body)) // create a new reader from bytes read in the response and set the response body (allowing the client to still be able to do res.Body afterwards)
 		if len(body) > 0 {
 			if err = json.Unmarshal(body, &out); err != nil {
-				return nil, fmt.Errorf("unable to unmarshal response body ['%s'] for request = '%s %s %s'. Response = '%s'", err.Error(), req.Method, req.URL, req.Proto, resp.Status)
+				return resp, fmt.Errorf("unable to unmarshal response body ['%s'] for request = '%s %s %s'. Response = '%s'", err.Error(), req.Method, req.URL, req.Proto, resp.Status)
 			}
 		} else {
-			return nil, fmt.Errorf("expected a response body but response body received was empty for request = '%s %s %s'. Response = '%s'", req.Method, req.URL, req.Proto, resp.Status)
+			return resp, fmt.Errorf("expected a response body but response body received was empty for request = '%s %s %s'. Response = '%s'", req.Method, req.URL, req.Proto, resp.Status)
 		}
 	}
 	return resp, nil
